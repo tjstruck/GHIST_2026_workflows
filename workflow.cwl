@@ -34,11 +34,11 @@ inputs:
   organizersId:
     label: userID or teamID for the organizers team on Synapse
     type: string
-    default: "3379097" # Placeholder - MUST be updated
+    default: "3473724" # Placeholder - MUST be updated - UPDATED
   groundtruthSynId:
     label: synID for the groundtruth file on Synapse
     type: string
-    default: "syn123"  # Placeholder - MUST be updated
+    default: "syn75131940"  # Placeholder - MUST be updated - UPDATED
 
   # ------------------------------------------------------------------------------
   # Optional challenge configuration - update as needed.
