@@ -24,7 +24,7 @@ def relative_root_mean_squared_error(truth, pred):
 
 def score_demography(truth, pred):
     error = []
-    with open(args.submissionfile) as stream:
+    with open(pred) as stream:
         try:
             submission = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
