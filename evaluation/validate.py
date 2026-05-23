@@ -10,7 +10,7 @@ written to a JSON file. This JSON file will then be used to annotate
 the submission (next step in the workflow CWL).
 """
 
-import argparse, json
+import argparse, json, yaml
 
 # if args.submission_file is None:
 #     prediction_file_status = "INVALID"
