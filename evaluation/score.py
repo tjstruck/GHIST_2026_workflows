@@ -12,65 +12,65 @@ annotate the submission (next step in the workflow CWL).
 """
 
 import argparse
-import csv
 import json
+import yaml
+import numpy as np
 
+def relative_root_mean_squared_error(truth, pred):
+    n = len(truth) # update
+    squared_error = np.square((truth - pred) / truth)
+    rrmse = np.sqrt(np.sum(squared_error))
+    return rrmse
 
-def read_csv(filepath, delim=",", id_col="id"):
-    """
-    Parses a file and returns a dictionary, where id_col
-    is will be used as the key.
-    """
-    data = {}
-    with open(filepath) as csvfile:
-        reader = csv.DictReader(csvfile, delimiter=delim)
+def score_demography(truth, pred):
+    error = []
+    with open(args.submissionfile) as stream:
         try:
-            for row in reader:
-                data[row[id_col]] = row
-        except KeyError:
-            return {}
-    return data
+            submission = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            error.append(str(exc))
 
+    with open(truth) as stream:
+        try:
+            groundthruth = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            error.append(str(exc))
 
-def score_accuracy(gt, truth_label, pred, pred_label):
-    """
-    Compute scores of the predictions against the groundtruth/
-    goldstandard.
-    """
-    correct_count = 0
-    total_count = 0
-    for patient_id, predictions in pred.items():
-        if predictions.get(pred_label) == gt.get(patient_id).get(truth_label):
-            correct_count += 1
-        total_count += 1
-    if total_count == 0:
-        return 0
-    return correct_count / total_count
+    try:
+        keys = list(groundthruth['parameters'].keys())
+        keys.sort()
+        RRMSE = relative_root_mean_squared_error(np.array([groundthruth['parameters'][key] for key in keys]), np.array([submission['parameters'][key] for key in keys]))
+    except:
+        RRMSE = np.nan
+    if error == []:
+        error = ""
+    return RRMSE, error
 
 
 def main():
     """Main function."""
 
-    id_col = "PatientID"
-    pred = read_csv(args.prediction_file, id_col=id_col)
-    if not pred:
-        scores = 0
-        status = "INVALID"
-        errors = f"Cannot be evaluated; {id_col} not found in the prediction file"
-    else:
-        truth = read_csv(args.groundtruth_file, id_col=id_col)
-        status = "SCORED"
-        errors = ""
+    # id_col = "PatientID"
+    # pred = read_csv(args.prediction_file, id_col=id_col)
+    # if not pred:
+    #     scores = 0
+    #     status = "INVALID"
+    #     errors = f"Cannot be evaluated; {id_col} not found in the prediction file"
+    # else:
+    #     truth = read_csv(args.groundtruth_file, id_col=id_col)
+    #     status = "SCORED"
+    #     errors = ""
 
-        try:
-            scores = score_accuracy(truth, "has_cancer", pred, "probability")
-        except ValueError:
-            scores = 0
-            status = "INVALID"
-            errors = "Cannot be evaluated; error encountered during scoring"
+    try:
+        scores, errors = score_demography(args.groundtruth_file, args.prediction_file)
+        status = "SCORED"
+    except ValueError:
+        scores = np.nan
+        status = "INVALID"
+        errors = "Cannot be evaluated; error encountered during scoring"
 
     result = {
-        "accuracy": scores,
+        "RRMSE": scores,
         "submission_status": status,
         "submission_errors": errors,
     }
