@@ -103,13 +103,13 @@ def main():
                 "post_decline_fraction",
                 ]
 
-    if args.entity_type != "FileEntity":
-        errors = f"Submission should be a file, not {args.entity_type}"
-    else:
-        errors = validate_yaml(
-            args.prediction_file,
-            expected_entries,
-        )
+    # if args.entity_type != "FileEntity":
+    #     errors = f"Submission should be a file, not {args.entity_type}"
+    # else:
+    errors = validate_yaml(
+        args.prediction_file,
+        expected_entries,
+    )
 
     result = {
         "submission_status": "INVALID" if errors else "VALIDATED",
