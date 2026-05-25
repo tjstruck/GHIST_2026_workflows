@@ -14,7 +14,7 @@ import argparse, json
 import pandas as pd
 
 
-def validate_table(filepath):#, truth):
+def validate_table(filepath, truth):
     """
     Checks for expected colnames in the YAML file.
     """
@@ -49,13 +49,13 @@ def validate_table(filepath):#, truth):
         for header in headers:
             header.lower().strip() in [col.lower().strip() for col in list(table)] or errors.append(f"Missing expected column name: {header}")
 
-        # # Check that the number of rows in the submission matches the number of rows in the groundtruth
-        # groundthruth = pd.read_csv(truth, sep=None, engine='python')
-        # if len(groundthruth) == len(table):
-        #     pass
-        # else:
-        #     errors.append(f"Number of rows in submission ({len(table)}) does not match number of rows in groundtruth ({len(groundthruth)}). \
-        #                 \nMake sure to include unrelated individuals in the submission file.")
+        # Check that the number of rows in the submission matches the number of rows in the groundtruth
+        groundthruth = pd.read_csv(truth, sep=None, engine='python')
+        if len(groundthruth) == len(table):
+            pass
+        else:
+            errors.append(f"Number of rows in submission ({len(table)}) does not match number of rows in groundtruth ({len(groundthruth)}). \
+                        \nMake sure to include unrelated individuals in the submission file.")
 
     return "\n".join(errors)
 
@@ -64,7 +64,7 @@ def main():
 
     errors = validate_table(
         args.prediction_file,
-        # args.groundtruth_file
+        args.groundtruth_file
     )
 
     result = {
@@ -89,12 +89,12 @@ if __name__ == "__main__":
         default="FileEntity",
         help="Submission type, based on Synapse entities",
     )
-    # parser.add_argument(
-    #     "-g",
-    #     "--groundtruth_file",
-    #     required=True,
-    #     help="Filepath to groundtruth/goldstandard CSV",
-    # )
+    parser.add_argument(
+        "-g",
+        "--groundtruth_file",
+        required=True,
+        help="Filepath to groundtruth/goldstandard CSV",
+    )
     parser.add_argument(
         "-o",
         "--output_file",

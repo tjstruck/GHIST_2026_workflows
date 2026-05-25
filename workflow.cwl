@@ -110,6 +110,8 @@ steps:
         source: "#01_download_submission/filepath"
       - id: entity_type
         source: "#01_download_submission/entity_type"
+      - id: groundtruth_file
+        source: "#01_download_groundtruth/filepath"
     out:
       - id: results
       - id: status
