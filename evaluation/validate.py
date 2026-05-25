@@ -10,53 +10,18 @@ written to a JSON file. This JSON file will then be used to annotate
 the submission (next step in the workflow CWL).
 """
 
-import argparse, json, yaml
-
-# if args.submission_file is None:
-#     prediction_file_status = "INVALID"
-#     invalid_reasons = ['Expected FileEntity type but found ' + args.entity_type]
-# else:
-#     invalid_reasons = []
-#     prediction_file_status = "VALIDATED"
-
-#     try:
-#         open(args.submission_file, "r")
-#     except FileNotFoundError:
-#         invalid_reasons = ["File could not be opened"]
-
-#     if invalid_reasons == []:
-#         exc = 'No error'
-#         with open(args.submission_file) as stream:
-#             try:
-#                 fi = yaml.safe_load(stream)
-#             except yaml.YAMLError as exc:
-#                 invalid_reasons = [exc]
-
-#     if invalid_reasons == []:
-#         try:
-#             fi['parameters']['generations']
-#             fi['parameters']['post_decline_fraction']
-#         except KeyError:
-#             invalid_reasons = ['Could not find one or more parameters, which are required for scoring']
-
-#     if invalid_reasons != []:
-#         prediction_file_status = "INVALID"
-# result = {'submission_errors': "\n".join(invalid_reasons),
-#         'submission_status': prediction_file_status}
-# with open(args.results, 'w') as o:
-#     o.write(json.dumps(result))
+import argparse, json
+import pandas as pd
 
 
-
-
-
-def validate_yaml(filepath, expected_entries=["id"]):
+def validate_table(filepath):
     """
     Checks for expected colnames in the YAML file.
     """
 
     errors = []
     prediction_file_status = "VALIDATED"
+    headers = ["indid1", "indid2", "meioses_count", "relation"]
 
     try:
         open(filepath, "r")
@@ -65,34 +30,18 @@ def validate_yaml(filepath, expected_entries=["id"]):
 
     if errors == []:
         exc = 'No error'
-        with open(filepath) as stream:
-            try:
-                fi = yaml.safe_load(stream)
-            except yaml.YAMLError as exc:
-                errors = [exc]
+        try:
+            table = pd.read_csv("groundtruth/relatedness2_testing.csv", sep=None, engine='python')
+        except ValueError as exc:
+            errors = [exc]
 
     if errors == []:
         try:
-            for entry in expected_entries:
-                fi['parameters'][entry]
+            for entry in list(table):
+                entry.lower()
         except KeyError:
             errors = ['Could not find one or more parameters, which are required for scoring']
 
-    # if errors != []:
-    #     prediction_file_status = "INVALID"
-
-    # result = {'submission_errors': "\n".join(errors),
-    #         'submission_status': prediction_file_status}
-    # with open(args.results, 'w') as o:
-    #     o.write(json.dumps(result))
-
-    # Example from Synapse validation script template:
-    # errors = []
-    # with open(filepath) as yamlfile:
-    #     data = yaml.safe_load(yamlfile)
-    #     for colname in expected_entries:
-    #         if colname not in reader.fieldnames:
-    #             errors.append(f"'{colname}' is missing from the prediction file")
     return "\n".join(errors)
 
 def main():
