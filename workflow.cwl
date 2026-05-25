@@ -38,7 +38,7 @@ inputs:
   groundtruthSynId:
     label: synID for the groundtruth file on Synapse
     type: string
-    default: "syn75131939"  # Placeholder - MUST be updated - UPDATED
+    default: "syn75153967"  # Placeholder - MUST be updated - UPDATED
 
   # ------------------------------------------------------------------------------
   # Optional challenge configuration - update as needed.
