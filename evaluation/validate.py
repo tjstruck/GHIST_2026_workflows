@@ -152,7 +152,7 @@ def _read_bed(bedfile):
             raise ValueError("No valid intervals found in the BED file. File should have values chrom, start, and stop values. ex: 1 1000 20000")
     return
 
-def validate_bed(filepath, expected_entries=["id"]):
+def validate_bed(filepath):
     """
     Checks for expected colnames in the YAML file.
     """
@@ -178,11 +178,6 @@ def validate_bed(filepath, expected_entries=["id"]):
 
 def main():
     """Main function."""
-
-    expected_entries=[
-                "generations",
-                "post_decline_fraction",
-                ]
 
     # if args.entity_type != "FileEntity":
     #     errors = f"Submission should be a file, not {args.entity_type}"

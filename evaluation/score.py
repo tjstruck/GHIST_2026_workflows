@@ -151,7 +151,9 @@ def main():
         errors = f"Cannot be evaluated; error encountered during scoring: {exc}"
 
     result = {
-        "RRMSE": scores,
+        "recall": recall,
+        "size": size,
+        "f1": f1,
         "submission_status": status,
         "submission_errors": errors,
     }
