@@ -25,9 +25,8 @@ def relative_root_mean_squared_error(truth, pred):
 def canonical_pair(row):
     return tuple(sorted([row['indid1'], row['indid2']]))
 
-
-
 def score_relation(truth, pred):
+
     errors = []
 
     submission = pd.read_csv(pred, sep=None, engine='python')

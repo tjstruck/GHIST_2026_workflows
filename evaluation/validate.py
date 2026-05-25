@@ -45,9 +45,9 @@ def validate_table(filepath, truth):
     if errors == []:
         # Checking for expected column names (case-insensitive)
         for entry in list(table):
-            entry.lower() in headers or errors.append(f"Unexpected column name: {entry}")
+            entry.lower().strip() in [header.lower().strip() for header in headers] or errors.append(f"Unexpected column name: {entry}")
         for header in headers:
-            header in [col.lower() for col in list(table)] or errors.append(f"Missing expected column name: {header}")
+            header.lower().strip() in [col.lower().strip() for col in list(table)] or errors.append(f"Missing expected column name: {header}")
 
         # Check that the number of rows in the submission matches the number of rows in the groundtruth
         groundthruth = pd.read_csv(truth, sep=None, engine='python')
