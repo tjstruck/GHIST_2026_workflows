@@ -89,12 +89,12 @@ if __name__ == "__main__":
         default="FileEntity",
         help="Submission type, based on Synapse entities",
     )
-    parser.add_argument(
-        "-g",
-        "--groundtruth_file",
-        required=True,
-        help="Filepath to groundtruth/goldstandard CSV",
-    )
+    # parser.add_argument(
+    #     "-g",
+    #     "--groundtruth_file",
+    #     required=True,
+    #     help="Filepath to groundtruth/goldstandard CSV",
+    # )
     parser.add_argument(
         "-o",
         "--output_file",
