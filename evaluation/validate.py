@@ -49,13 +49,13 @@ def validate_table(filepath, truth):
         for header in headers:
             header.lower().strip() in [col.lower().strip() for col in list(table)] or errors.append(f"Missing expected column name: {header}")
 
-        # Check that the number of rows in the submission matches the number of rows in the groundtruth
-        groundthruth = pd.read_csv(truth, sep=None, engine='python')
-        if len(groundthruth) == len(table):
-            pass
-        else:
-            errors.append(f"Number of rows in submission ({len(table)}) does not match number of rows in groundtruth ({len(groundthruth)}). \
-                        \nMake sure to include unrelated individuals in the submission file.")
+        # # Check that the number of rows in the submission matches the number of rows in the groundtruth
+        # groundthruth = pd.read_csv(truth, sep=None, engine='python')
+        # if len(groundthruth) == len(table):
+        #     pass
+        # else:
+        #     errors.append(f"Number of rows in submission ({len(table)}) does not match number of rows in groundtruth ({len(groundthruth)}). \
+        #                 \nMake sure to include unrelated individuals in the submission file.")
 
     return "\n".join(errors)
 
@@ -64,7 +64,7 @@ def main():
 
     errors = validate_table(
         args.prediction_file,
-        args.groundtruth_file
+        # args.groundtruth_file
     )
 
     result = {

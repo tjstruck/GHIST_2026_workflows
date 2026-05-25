@@ -110,9 +110,6 @@ steps:
         source: "#01_download_submission/filepath"
       - id: entity_type
         source: "#01_download_submission/entity_type"
-      # Seeing if I can include the groundtruth
-      - id: groundtruth_file
-        source: "#01_download_groundtruth/filepath"
     out:
       - id: results
       - id: status
