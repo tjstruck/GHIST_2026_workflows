@@ -14,7 +14,7 @@ import argparse, json
 import pandas as pd
 
 
-def validate_table(filepath, truth):
+def validate_table(filepath):#, truth):
     """
     Checks for expected colnames in the YAML file.
     """
