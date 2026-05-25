@@ -14,14 +14,12 @@ import argparse, json
 import pandas as pd
 
 
-def validate_table(filepath):
+def validate_table(filepath, truth):
     """
     Checks for expected colnames in the YAML file.
     """
 
     errors = []
-    prediction_file_status = "VALIDATED"
-    headers = ["indid1", "indid2", "meioses_count", "relation"]
 
     try:
         open(filepath, "r")
@@ -31,33 +29,42 @@ def validate_table(filepath):
     if errors == []:
         exc = 'No error'
         try:
-            table = pd.read_csv("groundtruth/relatedness2_testing.csv", sep=None, engine='python')
+            table = pd.read_csv(filepath, sep=None, engine='python')
         except ValueError as exc:
             errors = [exc]
 
+    # Check for expected column number so we know if they are including the "relation" column or not, 
+    # which is optional for scoring but may be included in the submission file
+    if len(table.columns) < 3:
+        headers = ["indID1", "indID2", "meioses_count"]
+    elif len(table.columns) == 4:
+        headers = ["indID1", "indID2", "meioses_count", "relation"]
+    else:
+        errors.append(f"Unexpected number of columns: {len(table.columns)}. Expected 3 or 4 columns (indID1, indID2, meioses_count, and optional relation column).")
+
     if errors == []:
-        try:
-            for entry in list(table):
-                entry.lower()
-        except KeyError:
-            errors = ['Could not find one or more parameters, which are required for scoring']
+        # Checking for expected column names (case-insensitive)
+        for entry in list(table):
+            entry.lower() in headers or errors.append(f"Unexpected column name: {entry}")
+        for header in headers:
+            header in [col.lower() for col in list(table)] or errors.append(f"Missing expected column name: {header}")
+
+        # Check that the number of rows in the submission matches the number of rows in the groundtruth
+        groundthruth = pd.read_csv(truth, sep=None, engine='python')
+        if len(groundthruth) == len(table):
+            pass
+        else:
+            errors.append(f"Number of rows in submission ({len(table)}) does not match number of rows in groundtruth ({len(groundthruth)}). \
+                        \nMake sure to include unrelated individuals in the submission file.")
 
     return "\n".join(errors)
 
 def main():
     """Main function."""
 
-    expected_entries=[
-                "generations",
-                "post_decline_fraction",
-                ]
-
-    # if args.entity_type != "FileEntity":
-    #     errors = f"Submission should be a file, not {args.entity_type}"
-    # else:
-    errors = validate_yaml(
+    errors = validate_table(
         args.prediction_file,
-        expected_entries,
+        args.groundtruth_file
     )
 
     result = {
@@ -81,6 +88,12 @@ if __name__ == "__main__":
         "--entity_type",
         default="FileEntity",
         help="Submission type, based on Synapse entities",
+    )
+    parser.add_argument(
+        "-g",
+        "--groundtruth_file",
+        required=True,
+        help="Filepath to groundtruth/goldstandard CSV",
     )
     parser.add_argument(
         "-o",

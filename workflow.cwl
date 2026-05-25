@@ -38,7 +38,7 @@ inputs:
   groundtruthSynId:
     label: synID for the groundtruth file on Synapse
     type: string
-    default: "syn75131940"  # Placeholder - MUST be updated - UPDATED
+    default: "syn75158967"  # Placeholder - MUST be updated - UPDATED
 
   # ------------------------------------------------------------------------------
   # Optional challenge configuration - update as needed.
@@ -110,6 +110,9 @@ steps:
         source: "#01_download_submission/filepath"
       - id: entity_type
         source: "#01_download_submission/entity_type"
+      # Seeing if I can include the groundtruth
+      - id: groundtruth_file
+        source: "#01_download_groundtruth/filepath"
     out:
       - id: results
       - id: status
