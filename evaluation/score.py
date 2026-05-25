@@ -145,9 +145,10 @@ def main():
         size = np.sum(sweepscore.interval_lengths) / 1e5
         f1 = sweepscore.f1
         status = "SCORED"
+        errors = ""
     except ValueError as exc:
         recall, size, f1 = np.nan, np.nan, np.nan
-        status = "INVALID"
+        status = "FAILED"
         errors = f"Cannot be evaluated; error encountered during scoring: {exc}"
 
     result = {
