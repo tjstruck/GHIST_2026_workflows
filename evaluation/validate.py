@@ -170,7 +170,7 @@ def validate_bed(filepath):
         if invalid_reasons == []:
             exc = 'No error'
             try:
-                _read_bed(None, filepath)
+                _read_bed(filepath)
             except ValueError as exc:
                 invalid_reasons = [exc]
 
