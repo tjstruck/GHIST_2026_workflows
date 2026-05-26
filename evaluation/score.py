@@ -26,9 +26,9 @@ def canonical_pair(row):
     return tuple(sorted([row['indid1'], row['indid2']]))
 
 def score_relation(truth, pred):
-
     errors = []
 
+    # Load submission and groundtruth files with pandas, handling potential issues with file format or encoding
     submission = pd.read_csv(pred, sep=None, engine='python')
     groundthruth = pd.read_csv(truth, sep=None, engine='python')
 
@@ -56,7 +56,7 @@ def score_relation(truth, pred):
         errors.append("Error calculating RRMSE; check that 'meioses_count' column is present and contains numeric values")
 
     # Calculate percentage of pairs with correct relation (if relation column is present)
-    if 'relation' in submission.columns and 'relation' in groundthruth.columns:
+    if errors == [] and 'relation' in submission.columns and 'relation' in groundthruth.columns:
         # Control for case sensitivity and whitespace in relation column before merging
         submission['relation'] = submission['relation'].str.strip().str.lower()
         groundthruth['relation'] = groundthruth['relation'].str.strip().str.lower()
@@ -72,7 +72,7 @@ def score_relation(truth, pred):
     else:
         relation_accuracy = np.nan
 
-    return RRMSE, relation_accuracy, errors
+    return RRMSE, relation_accuracy, '\n'.join(errors)
 
 
 def main():
@@ -80,8 +80,11 @@ def main():
 
     try:
         RRMSE, relation_accuracy, errors = score_relation(args.groundtruth_file, args.prediction_file)
-        status = "SCORED"
-    except ValueError:
+        if errors:
+            status = "INVALID"
+        else:
+            status = "SCORED"
+    except:
         RRMSE = np.nan
         relation_accuracy = np.nan
         status = "INVALID"

@@ -21,11 +21,13 @@ def validate_table(filepath, truth):
 
     errors = []
 
+    # Make sure the user uploaded a file that can be opened and read
     try:
         open(filepath, "r")
     except FileNotFoundError:
         errors = ["File could not be opened"]
 
+    # Make sure there are no errors opening with pandas
     if errors == []:
         exc = 'No error'
         try:
