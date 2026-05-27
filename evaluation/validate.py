@@ -71,28 +71,14 @@ def validate_yaml(filepath, expected_entries=["id"]):
             except yaml.YAMLError as exc:
                 errors = [exc]
 
+
     if errors == []:
-        try:
-            for entry in expected_entries:
+        for entry in expected_entries:
+            try:
                 fi['parameters'][entry]
-        except KeyError:
-            errors = ['Could not find one or more parameters, which are required for scoring']
+            except KeyError:
+                errors.append(f'Could not find {entry} parameters\n')
 
-    # if errors != []:
-    #     prediction_file_status = "INVALID"
-
-    # result = {'submission_errors': "\n".join(errors),
-    #         'submission_status': prediction_file_status}
-    # with open(args.results, 'w') as o:
-    #     o.write(json.dumps(result))
-
-    # Example from Synapse validation script template:
-    # errors = []
-    # with open(filepath) as yamlfile:
-    #     data = yaml.safe_load(yamlfile)
-    #     for colname in expected_entries:
-    #         if colname not in reader.fieldnames:
-    #             errors.append(f"'{colname}' is missing from the prediction file")
     return "\n".join(errors)
 
 def main():
@@ -100,12 +86,9 @@ def main():
 
     expected_entries=[
                 "generations",
-                "post_decline_fraction",
+                "post_growth_scaling"
                 ]
 
-    # if args.entity_type != "FileEntity":
-    #     errors = f"Submission should be a file, not {args.entity_type}"
-    # else:
     errors = validate_yaml(
         args.prediction_file,
         expected_entries,
