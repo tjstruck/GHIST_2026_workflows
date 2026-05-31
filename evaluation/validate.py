@@ -53,9 +53,15 @@ def validate_table(filepath, truth):
 
     groundtruth = pd.read_csv(truth, sep=None, engine='python')
     if errors == [] and 'relation' in table.columns:
+        groundtruth['relation'] = groundtruth['relation'].str.lower()
+        try:
+            table['relation'] = table['relation'].str.lower()
+        except:
+            pass
+        potential_entries = '\n'.join(groundtruth['relation'].unique())
         for ele in table['relation']:
             if ele not in groundtruth['relation'].unique():
-                errors.append(f"Unexpected relation value: {ele}. Expected nomenclature of {'\n'.join(groundtruth['relation'].unique())}")
+                errors.append(f"Unexpected relation value: {ele}. Expected nomenclature of :" + potential_entries)
 
     return "\n".join(errors)
 
