@@ -13,6 +13,19 @@ the submission (next step in the workflow CWL).
 import argparse, json
 import pandas as pd
 
+def validate_columns(df):
+    errors = []
+    cols_lower = {c.lower(): c for c in df.columns}
+
+    required = ["indid1", "indid2"]
+    missing = [r for r in required if r not in cols_lower]
+    if missing:
+        errors.append(f"Missing required columns: {[cols_lower.get(m, m) for m in missing]}.")
+
+    optional = ["meioses_count", "relation"]
+    if not any(o in cols_lower for o in optional):
+        errors.append(f"Must have at least one of: {optional}.")
+    return errors
 
 def validate_table(filepath, truth):
     """
@@ -35,16 +48,13 @@ def validate_table(filepath, truth):
         except ValueError as exc:
             errors = [exc]
 
-    groundtruth = pd.read_csv(truth, sep=None, engine='python')
-    table.columns = table.columns.str.lower()
-    groundtruth.columns = groundtruth.columns.str.lower()
+    if errors == []:
+        groundtruth = pd.read_csv(truth, sep=None, engine='python')
+        table.columns = table.columns.str.lower()
+        groundtruth.columns = groundtruth.columns.str.lower()
 
-    # Check for expected column number so we know if they are including the "relation" column or not, 
-    # which is optional for scoring but may be included in the submission file
-    if len(table.columns) == 3 or len(table.columns) == 4:
-        headers = ["indID1", "indID2", "meioses_count", "relation"]
-    else:
-        errors.append(f"Unexpected number of columns: {len(table.columns)}. Expected 3 or 4 columns (indID1, indID2, meioses_count and/or relation column).")
+        # Check for expected column names (case-insensitive)
+        errors = validate_columns(table)
 
     if errors == []:
         # Checking for expected column names (case-insensitive)
@@ -55,11 +65,11 @@ def validate_table(filepath, truth):
 
     if errors == [] and 'relation' in table.columns:
         groundtruth['relation'] = groundtruth['relation'].str.lower()
+        groundtruth = groundtruth[groundtruth['relation'] != 'unrelated']
         try:
             table['relation'] = table['relation'].str.lower()
         except:
             pass
-        groundtruth = groundtruth[groundtruth['relation'] != 'unrelated']
         potential_entries = '\n'.join(groundtruth['relation'].unique())
         for ele in table['relation']:
             if ele not in groundtruth['relation'].unique():
