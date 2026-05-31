@@ -55,7 +55,7 @@ def validate_table(filepath, truth):
         for header in headers:
             header.lower().strip() in [col.lower().strip() for col in list(table)] or errors.append(f"Missing expected column name: {header}")
 
-    if errors == [] and 'relation' in table.columns.lower():
+    if errors == [] and 'relation' in table.columns:
         groundtruth['relation'] = groundtruth['relation'].str.lower()
         try:
             table['relation'] = table['relation'].str.lower()
