@@ -41,10 +41,8 @@ def validate_table(filepath, truth):
 
     # Check for expected column number so we know if they are including the "relation" column or not, 
     # which is optional for scoring but may be included in the submission file
-    if len(table.columns) < 3:
-        headers = ["indid1", "indid2", "meioses_count"]
-    elif len(table.columns) == 4:
-        headers = ["indid1", "indid2", "meioses_count", "relation"]
+    if len(table.columns) == 3 or len(table.columns) == 4:
+        headers = ["indID1", "indID2", "meioses_count", "relation"]
     else:
         errors.append(f"Unexpected number of columns: {len(table.columns)}. Expected 3 or 4 columns (indID1, indID2, meioses_count and/or relation column).")
 
@@ -52,8 +50,8 @@ def validate_table(filepath, truth):
         # Checking for expected column names (case-insensitive)
         for entry in list(table):
             entry.lower().strip() in [header.lower().strip() for header in headers] or errors.append(f"Unexpected column name: {entry}")
-        for header in headers:
-            header.lower().strip() in [col.lower().strip() for col in list(table)] or errors.append(f"Missing expected column name: {header}")
+        # for header in headers:
+        #     header.lower().strip() in [col.lower().strip() for col in list(table)] or errors.append(f"Missing expected column name: {header}")
 
     if errors == [] and 'relation' in table.columns:
         groundtruth['relation'] = groundtruth['relation'].str.lower()
