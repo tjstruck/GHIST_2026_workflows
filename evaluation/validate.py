@@ -35,14 +35,18 @@ def validate_table(filepath, truth):
         except ValueError as exc:
             errors = [exc]
 
+    groundtruth = pd.read_csv(truth, sep=None, engine='python')
+    table.columns = table.columns.str.lower()
+    groundtruth.columns = groundtruth.columns.str.lower()
+
     # Check for expected column number so we know if they are including the "relation" column or not, 
     # which is optional for scoring but may be included in the submission file
     if len(table.columns) < 3:
-        headers = ["indID1", "indID2", "meioses_count"]
+        headers = ["indid1", "indid2", "meioses_count"]
     elif len(table.columns) == 4:
-        headers = ["indID1", "indID2", "meioses_count", "relation"]
+        headers = ["indid1", "indid2", "meioses_count", "relation"]
     else:
-        errors.append(f"Unexpected number of columns: {len(table.columns)}. Expected 3 or 4 columns (indID1, indID2, meioses_count, and optional relation column).")
+        errors.append(f"Unexpected number of columns: {len(table.columns)}. Expected 3 or 4 columns (indID1, indID2, meioses_count and/or relation column).")
 
     if errors == []:
         # Checking for expected column names (case-insensitive)
@@ -51,8 +55,7 @@ def validate_table(filepath, truth):
         for header in headers:
             header.lower().strip() in [col.lower().strip() for col in list(table)] or errors.append(f"Missing expected column name: {header}")
 
-    groundtruth = pd.read_csv(truth, sep=None, engine='python')
-    if errors == [] and 'relation' in table.columns:
+    if errors == [] and 'relation' in table.columns.lower():
         groundtruth['relation'] = groundtruth['relation'].str.lower()
         try:
             table['relation'] = table['relation'].str.lower()
