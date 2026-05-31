@@ -59,12 +59,12 @@ def validate_table(filepath, truth):
             table['relation'] = table['relation'].str.lower()
         except:
             pass
-        potential_entries = '\n'.join(groundtruth['relation'].unique())
+        potential_entries = '\n\n'.join(groundtruth['relation'].unique())
         for ele in table['relation']:
             if ele not in groundtruth['relation'].unique():
                 errors.append(f"Unexpected relation value: {ele}. Expected nomenclature of :" + potential_entries)
 
-    return "\n".join(errors)
+    return "\n\n".join(errors)
 
 def main():
     """Main function."""
