@@ -59,6 +59,7 @@ def validate_table(filepath, truth):
             table['relation'] = table['relation'].str.lower()
         except:
             pass
+        groundtruth = groundtruth[groundtruth['relation'] != 'unrelated']
         potential_entries = '\n'.join(groundtruth['relation'].unique())
         for ele in table['relation']:
             if ele not in groundtruth['relation'].unique():
