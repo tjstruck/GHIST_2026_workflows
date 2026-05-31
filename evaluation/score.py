@@ -55,6 +55,9 @@ def score_relation(truth, pred):
     except:
         pass  # If 'relation' column is not present in submission, skip this step
 
+    # Exclude unrelated pairs from scoring
+    groundtruth = groundtruth[groundtruth['relation'] != 'unrelated']
+
     # Create a canonical pair key for merging (order of individuals should not matter)
     groundtruth['pair_key'] = groundtruth.apply(canonical_pair, axis=1)
     submission['pair_key'] = submission.apply(canonical_pair, axis=1)
