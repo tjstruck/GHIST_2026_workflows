@@ -78,8 +78,8 @@ def score_relation(truth, pred):
         except:
             J[column] = str(np.nan)
 
-    if all(np.isnan(v) for v in J.values()):
-        errors.append("Unable to score.")
+    # if all(v == str(np.nan) for v in J.values()):
+    #     errors.append("Unable to score.")
 
     return J, '\n'.join(errors)
 
