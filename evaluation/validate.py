@@ -22,7 +22,7 @@ def validate_columns(df):
     if missing:
         errors.append(f"Missing required columns: {[cols_lower.get(m, m) for m in missing]}.")
 
-    optional = ["meioses_count", "relation"]
+    optional = ["meioses_count", "relation", "relationship"]
     if not any(o in cols_lower for o in optional):
         errors.append(f"Must have at least one of: {optional}.")
     return errors
