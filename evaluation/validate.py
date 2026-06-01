@@ -56,12 +56,13 @@ def validate_table(filepath, truth):
         # Check for expected column names (case-insensitive)
         errors = validate_columns(table)
 
-    if errors == []:
-        # Checking for expected column names (case-insensitive)
-        for entry in list(table):
-            entry.lower().strip() in [header.lower().strip() for header in groundtruth.columns] or errors.append(f"Unexpected column name: {entry}")
-        # for header in groundtruth.columns:
-        #     header.lower().strip() in [col.lower().strip() for col in list(table)] or errors.append(f"Missing expected column name: {header}")
+    # Already making sure the submission has the needed columns, not interested in extra columns
+    # if errors == []:
+    #     # Checking for expected column names (case-insensitive)
+    #     for entry in list(table):
+    #         entry.lower().strip() in [header.lower().strip() for header in groundtruth.columns] or errors.append(f"Unexpected column name: {entry}")
+    #     # for header in groundtruth.columns:
+    #     #     header.lower().strip() in [col.lower().strip() for col in list(table)] or errors.append(f"Missing expected column name: {header}")
 
     if errors == [] and 'relation' in table.columns:
         groundtruth['relation'] = groundtruth['relation'].str.lower()
