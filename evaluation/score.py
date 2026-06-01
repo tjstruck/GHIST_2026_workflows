@@ -48,6 +48,9 @@ def score_relation(truth, pred):
     submission.columns = submission.columns.str.lower()
     groundtruth.columns = groundtruth.columns.str.lower()
 
+    if 'relationship' in submission.columns and 'relation' not in submission.columns:
+        submission = submission.rename(columns={'relationship': 'relation'})
+
     # Normalize relation column to lowercase
     groundtruth['relation'] = groundtruth['relation'].str.lower()
     try:
