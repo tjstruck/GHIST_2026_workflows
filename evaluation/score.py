@@ -27,7 +27,7 @@ def jaccard_index(merged, column_prefix):
         FP_k = np.sum((merged[f'{column_prefix}_pred'] == cls) & (merged[f'{column_prefix}_truth'] != cls))
         FN_k = np.sum((merged[f'{column_prefix}_pred'] != cls) & (merged[f'{column_prefix}_truth'] == cls))
 
-        jaccard_k.append(TP_k / (TP_k + FP_k + FN_k) if (TP_k + FP_k + FN_k) > 0 else np.nan)
+        jaccard_k.append(TP_k / (TP_k + FP_k + FN_k) if (TP_k + FP_k + FN_k) > 0 else str(np.nan))
         N_k.append(TP_k + FN_k)
 
 
@@ -76,7 +76,7 @@ def score_relation(truth, pred):
         try:
             J[column] = jaccard_index(merged, column)
         except:
-            J[column] = np.nan
+            J[column] = str(np.nan)
 
     if all(np.isnan(v) for v in J.values()):
         errors.append("Unable to score.")
@@ -94,8 +94,8 @@ def main():
         else:
             status = "SCORED"
     except:
-        jaccard_index["meioses_count"] = np.nan
-        jaccard_index["relation"] = np.nan
+        jaccard_index["meioses_count"] = str(np.nan)
+        jaccard_index["relation"] = str(np.nan)
         status = "INVALID"
         errors = "Cannot be evaluated; error encountered during scoring"
 
