@@ -65,10 +65,10 @@ def validate_table(filepath, truth):
     #     #     header.lower().strip() in [col.lower().strip() for col in list(table)] or errors.append(f"Missing expected column name: {header}")
 
     if errors == [] and 'relation' in table.columns:
-        groundtruth['relation'] = groundtruth['relation'].str.lower()
+        groundtruth['relation'] = groundtruth['relation'].str.lower().str.replace('-', '_', regex=False)
         groundtruth = groundtruth[groundtruth['relation'] != 'unrelated']
         try:
-            table['relation'] = table['relation'].str.lower()
+            table['relation'] = table['relation'].str.lower().str.replace('-', '_', regex=False)
         except:
             pass
         potential_entries = '\n'.join(groundtruth['relation'].unique())
