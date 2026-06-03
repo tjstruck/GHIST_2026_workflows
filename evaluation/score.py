@@ -52,9 +52,9 @@ def score_relation(truth, pred):
         submission = submission.rename(columns={'relationship': 'relation'})
 
     # Normalize relation column to lowercase
-    groundtruth['relation'] = groundtruth['relation'].str.lower()
+    groundtruth['relation'] = groundtruth['relation'].str.lower().str.replace('-', '_', regex=False)
     try:
-        submission['relation'] = submission['relation'].str.lower()
+        submission['relation'] = submission['relation'].str.lower().str.replace('-', '_', regex=False)
     except:
         pass  # If 'relation' column is not present in submission, skip this step
 
