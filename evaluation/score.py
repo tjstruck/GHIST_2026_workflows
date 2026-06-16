@@ -88,6 +88,22 @@ class ScoreSweeps:
                         " Please merge before resubmitting."
                     )
 
+    def _merge_overlapping_intervals(self, intervals):
+        """
+        Merge any overlapping intervals and return the merged list.
+        """
+        if len(intervals) == 0:
+            return intervals
+        sorted_intervals = sorted(intervals, key=lambda x: x[0])
+        merged = [sorted_intervals[0]]
+        for current in sorted_intervals[1:]:
+            last = merged[-1]
+            if self._interval_overlap(last, current):
+                merged[-1] = [last[0], max(last[1], current[1])]
+            else:
+                merged.append(current)
+        return merged
+
     def _sweep_in_interval(self, sweep_position, interval):
         """
         Check if a sweep position is within a single interval.
@@ -116,7 +132,7 @@ class ScoreSweeps:
         """
         Calculate and save the statistics of interest as attributes
         """
-        # sweepscores = self
+        self.intervals = np.array(self._merge_overlapping_intervals(self.intervals.tolist()))
         self._check_interval_overlap(self.intervals)
         self._get_interval_lengths()
         self._get_interval_sweep_hits_and_misses()
@@ -129,9 +145,6 @@ class ScoreSweeps:
         self.f1 = self.true_positive_count /\
             (self.true_positive_count +\
             (self.false_negative_count + self.false_positive_count_weighted) / 2)
-
-
-
 
 def main():
     """Main function."""
