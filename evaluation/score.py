@@ -105,6 +105,7 @@ def main():
     result = {
         "meioses_count": jaccard_index["meioses_count"],
         "relation": jaccard_index["relation"],
+        "relationship": jaccard_index["relation"],
         "submission_status": status,
         "submission_errors": errors,
     }
