@@ -10,7 +10,7 @@ written to a JSON file. This JSON file will then be used to annotate
 the submission (next step in the workflow CWL).
 """
 
-import argparse, json
+import argparse, csv, json
 import pandas as pd
 
 def validate_columns(df):
@@ -45,8 +45,8 @@ def validate_table(filepath, truth):
         exc = 'No error'
         try:
             table = pd.read_csv(filepath, sep=None, engine='python')
-        except ValueError as exc:
-            errors = [exc]
+        except (ValueError, csv.Error) as exc:
+            errors = [f'File could not be read as a table: {exc}']
 
     if errors == []:
         groundtruth = pd.read_csv(truth, sep=None, engine='python')
