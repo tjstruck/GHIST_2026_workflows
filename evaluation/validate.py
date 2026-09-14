@@ -10,7 +10,7 @@ written to a JSON file. This JSON file will then be used to annotate
 the submission (next step in the workflow CWL).
 """
 
-import argparse, json, yaml
+import argparse, json, math, yaml
 
 # if args.submission_file is None:
 #     prediction_file_status = "INVALID"
@@ -80,6 +80,26 @@ def validate_yaml(filepath, expected_entries=["id"]):
                 fi['parameters'][entry]
             except KeyError:
                 errors.append(f'Could not find {entry} parameters\n')
+
+    # Scoring divides by the truth and subtracts the submission, so anything
+    # float() cannot read scores as NaN. Catch it here, where the submitter
+    # sees why, instead of spending a final-round attempt on it. Strings are
+    # accepted because PyYAML reads 1e-4 and 2e3 as text, not numbers.
+    if errors == []:
+        for entry in expected_entries:
+            value = fi['parameters'][entry]
+            if value is None:
+                errors.append(f'{entry} has no value\n')
+                continue
+            try:
+                if isinstance(value, bool):
+                    raise ValueError
+                number = float(value)
+            except (TypeError, ValueError):
+                errors.append(f'{entry} must be a number, but found: {value!r}\n')
+                continue
+            if not math.isfinite(number):
+                errors.append(f'{entry} must be a finite number, but found: {value!r}\n')
 
     return "\n".join(errors)
 
