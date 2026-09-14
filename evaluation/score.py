@@ -90,21 +90,22 @@ def score_relation(truth, pred):
 def main():
     """Main function."""
 
+    # Not named jaccard_index: assigning that name here made it local to main(),
+    # so the except branch raised UnboundLocalError and wrote no results.json
     try:
-        jaccard_index, errors = score_relation(args.groundtruth_file, args.prediction_file)
+        scores, errors = score_relation(args.groundtruth_file, args.prediction_file)
         if errors:
             status = "INVALID"
         else:
             status = "SCORED"
-    except:
-        jaccard_index["meioses_count"] = str(np.nan)
-        jaccard_index["relation"] = str(np.nan)
+    except Exception:
+        scores = {"meioses_count": str(np.nan), "relation": str(np.nan)}
         status = "INVALID"
         errors = "Cannot be evaluated; error encountered during scoring"
 
     result = {
-        "meioses_count": jaccard_index["meioses_count"],
-        "relation": jaccard_index["relation"],
+        "meioses_count": scores["meioses_count"],
+        "relation": scores["relation"],
         "submission_status": status,
         "submission_errors": errors,
     }
