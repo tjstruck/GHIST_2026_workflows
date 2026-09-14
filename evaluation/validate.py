@@ -60,6 +60,18 @@ def validate_table(filepath, truth):
         # Check for expected column names (case-insensitive)
         errors = validate_columns(table)
 
+    # Blank IDs make scoring fail, and each blank relation would otherwise be
+    # reported as its own "Unexpected relation value: nan" error
+    if errors == []:
+        for column in ('indid1', 'indid2', 'relation'):
+            if column not in table.columns:
+                continue
+            blank = table[column].isna() | table[column].astype(str).str.strip().eq('')
+            if blank.any():
+                count = int(blank.sum())
+                errors.append(f"{column} has {count} blank {'entry' if count == 1 else 'entries'} "
+                              f"(first on line {blank.idxmax() + 2}).")
+
     # Already making sure the submission has the needed columns, not interested in extra columns
     # if errors == []:
     #     # Checking for expected column names (case-insensitive)
