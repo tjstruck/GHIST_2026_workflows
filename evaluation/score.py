@@ -39,7 +39,7 @@ def score_demography(truth, pred):
     try:
         keys = list(groundthruth['parameters'].keys())
         keys.sort()
-        RRMSE = relative_root_mean_squared_error(np.array([groundthruth['parameters'][key] for key in keys]), np.array([submission['parameters'][key] for key in keys]))
+        RRMSE = relative_root_mean_squared_error(np.array([groundthruth['parameters'][key] for key in keys]), np.array([float(submission['parameters'][key]) for key in keys]))
     except:
         RRMSE = np.nan
     if error == []:
