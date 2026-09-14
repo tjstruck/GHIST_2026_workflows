@@ -72,11 +72,12 @@ def validate_table(filepath, truth):
         except:
             pass
         potential_entries = '\n'.join(groundtruth['relation'].unique())
+        allowed = set(groundtruth['relation'].unique())
         for ele in table['relation']:
             # Scoring ignores unrelated pairs, so a submission may list them
             if ele == 'unrelated':
                 continue
-            if ele not in groundtruth['relation'].unique():
+            if ele not in allowed:
                 errors.append(f"Unexpected relation value: {ele}. Expected relation of any of the following: " + potential_entries)
 
     return "\n".join(errors)
