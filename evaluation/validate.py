@@ -69,7 +69,10 @@ def validate_yaml(filepath, expected_entries=["id"]):
             try:
                 fi = yaml.safe_load(stream)
             except yaml.YAMLError as exc:
-                errors = [exc]
+                errors = [f'File could not be read as YAML: {exc}']
+
+    if errors == [] and not (isinstance(fi, dict) and isinstance(fi.get('parameters'), dict)):
+        errors = ['Could not find a parameters section in the YAML file']
 
 
     if errors == []:
