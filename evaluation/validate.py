@@ -53,6 +53,10 @@ def validate_table(filepath, truth):
         table.columns = table.columns.str.lower()
         groundtruth.columns = groundtruth.columns.str.lower()
 
+        # Scoring renames relationship to relation, so check its labels the same way
+        if 'relationship' in table.columns and 'relation' not in table.columns:
+            table = table.rename(columns={'relationship': 'relation'})
+
         # Check for expected column names (case-insensitive)
         errors = validate_columns(table)
 
