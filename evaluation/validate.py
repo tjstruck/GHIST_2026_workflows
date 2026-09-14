@@ -84,10 +84,9 @@ def main():
     """Main function."""
 
     expected_entries=[
-                "AFR_population_size",
-                "EUR_population_size",
+                "pop1_population_size",
+                "pop2_population_size",
                 "generations_since_split",
-                "migration_rate",
                 ]
 
     # if args.entity_type != "FileEntity":
