@@ -13,6 +13,11 @@ the submission (next step in the workflow CWL).
 import argparse, csv, json
 import pandas as pd
 
+# Synapse rejects a string annotation longer than this. The annotate step then
+# fails, the submission ends in a workflow error and the participant is never
+# told what was wrong, so the error message is cut to fit.
+MAX_ERROR_CHARS = 1000
+
 def validate_columns(df):
     errors = []
     cols_lower = {c.lower(): c for c in df.columns}
@@ -87,14 +92,20 @@ def validate_table(filepath, truth):
             table['relation'] = table['relation'].str.lower().str.replace('-', '_', regex=False)
         except:
             pass
-        potential_entries = '\n'.join(groundtruth['relation'].unique())
+        potential_entries = ', '.join(groundtruth['relation'].unique())
         allowed = set(groundtruth['relation'].unique())
-        for ele in table['relation']:
-            # Scoring ignores unrelated pairs, so a submission may list them
-            if ele == 'unrelated':
-                continue
-            if ele not in allowed:
-                errors.append(f"Unexpected relation value: {ele}. Expected relation of any of the following: " + potential_entries)
+        # Scoring ignores unrelated pairs, so a submission may list them.
+        # Report each unexpected label once, not once per row: a per-row message
+        # quickly passes Synapse's annotation limit (see MAX_ERROR_CHARS).
+        # The expected labels go first so they survive if the message is cut.
+        labels = table['relation'].astype(str)
+        unexpected = ~labels.isin(allowed | {'unrelated'})
+        if unexpected.any():
+            errors.append(f"Expected relation of any of the following: {potential_entries}.")
+        for label, count in labels[unexpected].value_counts().items():
+            first = labels.index[unexpected & labels.eq(label)][0] + 2
+            errors.append(f"Unexpected relation value: {label} ({count} {'row' if count == 1 else 'rows'}, "
+                          f"first on line {first}).")
 
     return "\n".join(errors)
 
@@ -105,6 +116,9 @@ def main():
         args.prediction_file,
         args.groundtruth_file
     )
+    if len(errors) > MAX_ERROR_CHARS:
+        note = "\n... (more errors not shown)"
+        errors = errors[:MAX_ERROR_CHARS - len(note)].rsplit("\n", 1)[0] + note
 
     result = {
         "submission_status": "INVALID" if errors else "VALIDATED",
